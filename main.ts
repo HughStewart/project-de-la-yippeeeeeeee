@@ -1,1 +1,3 @@
-let x = 5
+let mySprite = Render.getRenderSpriteVariable()
+tiles.setCurrentTilemap(tilemap`level`)
+controller.moveSprite(mySprite)
