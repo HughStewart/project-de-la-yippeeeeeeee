@@ -1,4 +1,4 @@
-function Follow () {
+function Follow() {
     mySprite2.follow(mySprite, 10)
 }
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
