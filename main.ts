@@ -4,9 +4,20 @@ function Follow () {
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     Render.jumpWithHeightAndDuration(mySprite, 16, 500)
 })
+function MakeEnemy () {
+    tiles.placeOnTile(mySprite2, tiles.getTileLocation(randint(1, 64), randint(1, 64)))
+    if (tiles.tileAtLocationIsWall(mySprite2.tilemapLocation())) {
+        tiles.placeOnTile(mySprite2, tiles.getTileLocation(randint(1, 64), randint(1, 64)))
+    }
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
+    mySprite2.x += 1
+})
 let mySprite2: Sprite = null
 let mySprite: Sprite = null
 mySprite = Render.getRenderSpriteVariable()
+tiles.setCurrentTilemap(tilemap`level`)
+tiles.placeOnTile(mySprite, tiles.getTileLocation(31, 62))
 mySprite2 = sprites.create(img`
     ................................
     ................................
@@ -41,9 +52,5 @@ mySprite2 = sprites.create(img`
     ................................
     ................................
     `, SpriteKind.Enemy)
-tiles.setCurrentTilemap(tilemap`level`)
-tiles.placeOnTile(mySprite, tiles.getTileLocation(31, 62))
-tiles.placeOnTile(mySprite2, tiles.getTileLocation(randint(1, 64), randint(1, 64)))
-if (tiles.tileAtLocationIsWall(mySprite2.tilemapLocation())) {
-    tiles.placeOnTile(mySprite2, tiles.getTileLocation(randint(1, 64), randint(1, 64)))
-}
+MakeEnemy()
+Follow()
