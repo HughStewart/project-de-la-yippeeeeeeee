@@ -259,3 +259,10 @@ Follow()
 /*
 let enemyStatusBar = statusbars.create(20, 4, StatusBarKind.Health);
 enemyStatusBar.attachToSprite(mySprite2);
+*/
+
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (projectile, enemy) {
+    projectile.destroy() // Destroy the fireball
+    enemy.destroy() // Destroy the enemy sprite
+    game.over(true) // End the game with a win
+})
