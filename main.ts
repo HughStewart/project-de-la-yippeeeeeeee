@@ -1,6 +1,6 @@
-function Follow() {
-    mySprite2.follow(mySprite, 10)
-}
+//function Follow() {
+//    mySprite2.follow(mySprite, 10)
+//}
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     Render.jumpWithHeightAndDuration(mySprite, 16, 500)
 })
@@ -255,13 +255,7 @@ mySprite2,
 true
 )
 MakeEnemy()
-Follow()
-let statusbar = statusbars.create(30, 3, StatusBarKind.EnemyHealth)
-let statusbar2 = statusbars.create(30, 2, StatusBarKind.Health)
-statusbar.attachToSprite(mySprite)
-statusbar2.attachToSprite(mySprite2)
-statusbar2.setOffsetPadding(-5, -4)
-Render.setSpriteAttribute(statusbar2, RCSpriteAttribute.ZOffset, 20)
+//Follow()
 /*
 let enemyStatusBar = statusbars.create(20, 4, StatusBarKind.Health);
 enemyStatusBar.attachToSprite(mySprite2);
@@ -270,10 +264,13 @@ enemyStatusBar.attachToSprite(mySprite2);
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (projectile, enemy) {
     projectile.destroy() // Destroy the fireball
     enemy.destroy() // Destroy the enemy sprite
-    game.over(true) // End the game with a win
+    //game.over(true) // End the game with a win
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (projectile, enemy) {
     projectile.destroy() // Destroy the fireball
     enemy.destroy() // Destroy the enemy sprite
     game.over(false) // End the game with a win
+})
+game.onUpdateInterval(500, function() {
+    scene.followPath(mySprite2, scene.aStar(tiles.locationOfSprite(mySprite2), tiles.locationOfSprite(mySprite)), 33)
 })
