@@ -6,6 +6,9 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 
 // Shoot a fireball in the direction the player is facing
+
+//let fireball_player = sprites.create(assets.image`fireball`, SpriteKind.Projectile)
+
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     // Get the player's facing direction
     let dirX = Render.getAttribute(Render.attribute.dirX)
@@ -42,7 +45,7 @@ if (scene.onHitWall(SpriteKind.Projectile, function (sprite: Sprite, location: t
     sprite.destroy()
 }))
 
-//mySprite.overlapsWith(null)
+
 
 function MakeEnemy () {
     tiles.placeOnTile(mySprite2, tiles.getTileLocation(32, 58))
@@ -253,3 +256,6 @@ true
 )
 MakeEnemy()
 Follow()
+/*
+let enemyStatusBar = statusbars.create(20, 4, StatusBarKind.Health);
+enemyStatusBar.attachToSprite(mySprite2);
