@@ -259,3 +259,4 @@ Follow()
 /*
 let enemyStatusBar = statusbars.create(20, 4, StatusBarKind.Health);
 enemyStatusBar.attachToSprite(mySprite2);
+*/
