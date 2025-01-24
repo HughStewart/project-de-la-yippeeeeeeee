@@ -256,6 +256,12 @@ true
 )
 MakeEnemy()
 Follow()
+let statusbar = statusbars.create(30, 3, StatusBarKind.EnemyHealth)
+let statusbar2 = statusbars.create(30, 2, StatusBarKind.Health)
+statusbar.attachToSprite(mySprite)
+statusbar2.attachToSprite(mySprite2)
+statusbar2.setOffsetPadding(-5, -4)
+Render.setSpriteAttribute(statusbar2, RCSpriteAttribute.ZOffset, 20)
 /*
 let enemyStatusBar = statusbars.create(20, 4, StatusBarKind.Health);
 enemyStatusBar.attachToSprite(mySprite2);
