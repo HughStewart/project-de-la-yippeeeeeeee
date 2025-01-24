@@ -4,6 +4,46 @@ function Follow() {
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     Render.jumpWithHeightAndDuration(mySprite, 16, 500)
 })
+
+// Shoot a fireball in the direction the player is facing
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    // Get the player's facing direction
+    let dirX = Render.getAttribute(Render.attribute.dirX)
+    let dirY = Render.getAttribute(Render.attribute.dirY)
+
+
+    // Calculate the angle in radians
+    let angle = Math.atan2(dirY, dirX)
+
+
+    // Define the speed of the projectile
+    let speed = 50
+
+
+    // Calculate velocity components using the angle
+    let vx = Math.cos(angle) * speed
+    let vy = Math.sin(angle) * speed
+
+
+    //Create the new fireball sprite to allow for multiple fireballs
+    let fireball_player = sprites.create(assets.image`fireball`, SpriteKind.Projectile)
+
+
+    // Place the fireball at the player's position
+    fireball_player.x = mySprite.x
+    fireball_player.y = mySprite.y
+
+
+    // Set the velocity of the fireball
+    fireball_player.setVelocity(vx, vy)
+})
+
+if (scene.onHitWall(SpriteKind.Projectile, function (sprite: Sprite, location: tiles.Location) {
+    sprite.destroy()
+}))
+
+//mySprite.overlapsWith(null)
+
 function MakeEnemy () {
     tiles.placeOnTile(mySprite2, tiles.getTileLocation(32, 58))
 }
