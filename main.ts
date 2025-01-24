@@ -266,3 +266,8 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (projectile,
     enemy.destroy() // Destroy the enemy sprite
     game.over(true) // End the game with a win
 })
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (projectile, enemy) {
+    projectile.destroy() // Destroy the fireball
+    enemy.destroy() // Destroy the enemy sprite
+    game.over(false) // End the game with a win
+})
