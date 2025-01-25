@@ -1,5 +1,5 @@
 //function Follow() {
-//    mySprite2.follow(mySprite, 10)
+//    enemySprite.follow(mySprite, 10)
 //}
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     Render.jumpWithHeightAndDuration(mySprite, 16, 500)
@@ -48,17 +48,17 @@ if (scene.onHitWall(SpriteKind.Projectile, function (sprite: Sprite, location: t
 
 
 function MakeEnemy () {
-    tiles.placeOnTile(mySprite2, tiles.getTileLocation(32, 58))
+    tiles.placeOnTile(enemySprite, tiles.getTileLocation(32, 58))
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
-    mySprite2.x += 1
+    enemySprite.x += 1
 })
-let mySprite2: Sprite = null
+let enemySprite: Sprite = null
 let mySprite: Sprite = null
 mySprite = Render.getRenderSpriteVariable()
 tiles.setCurrentTilemap(tilemap`level`)
 tiles.placeOnTile(mySprite, tiles.getTileLocation(31, 62))
-mySprite2 = sprites.create(img`
+enemySprite = sprites.create(img`
     ..............fff...............
     .............ffbfff.............
     ............fb11111ff...........
@@ -91,7 +91,7 @@ mySprite2 = sprites.create(img`
     .fb12211fb111fb1111fb1222211f...
     .f2222212fb11fb1111fb2222211f...
     .f2222222fb111fb111f22222222f...
-    `, SpriteKind.Enemy)
+`, SpriteKind.Enemy)
 scene.setBackgroundImage(img`
     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
@@ -215,7 +215,7 @@ scene.setBackgroundImage(img`
     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
     `)
 animation.runImageAnimation(
-mySprite2,
+enemySprite,
 [img`
     . . . . . . f f b f f . . . . . 
     . . . . . . f b 1 1 f f . . . . 
@@ -257,20 +257,60 @@ true
 MakeEnemy()
 //Follow()
 /*
-let enemyStatusBar = statusbars.create(20, 4, StatusBarKind.Health);
-enemyStatusBar.attachToSprite(mySprite2);
+let enemyHealthBar = statusbars.create(20, 4, StatusBarKind.Health);
+enemyHealthBar.attachToSprite(enemySprite);
 */
+let enemyHealth = 500
+let playerHealth = 100
+
+
 
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (projectile, enemy) {
     projectile.destroy() // Destroy the fireball
-    enemy.destroy() // Destroy the enemy sprite
+    enemyHealth -= 1.5 // Destroy the enemy sprite
+    enemyHealthBar.value -= 1.5
     //game.over(true) // End the game with a win
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (projectile, enemy) {
-    projectile.destroy() // Destroy the fireball
-    enemy.destroy() // Destroy the enemy sprite
-    game.over(false) // End the game with a win
+    //enemy.destroy() // Destroy the enemy sprite
+    playerHealth += -1
+    playerHealthBar.value += -1
+    //game.over(false) // End the game with a win
 })
 game.onUpdateInterval(500, function() {
-    scene.followPath(mySprite2, scene.aStar(tiles.locationOfSprite(mySprite2), tiles.locationOfSprite(mySprite)), 33)
+    scene.followPath(enemySprite, scene.aStar(tiles.locationOfSprite(enemySprite), tiles.locationOfSprite(mySprite)), 33)
+})
+
+
+
+// Enemy Health Bar:
+let enemyHealthBar = statusbars.create(30, 3, StatusBarKind.EnemyHealth)
+//Player Health Bar:
+let playerHealthBar = statusbars.create(30, 2, StatusBarKind.Health)
+enemyHealthBar.attachToSprite(enemySprite)
+//playerHealthBar.attachToSprite(enemySprite)
+playerHealthBar.setOffsetPadding(-5, -4)
+Render.setSpriteAttribute(enemyHealthBar, RCSpriteAttribute.ZOffset, 20)
+playerHealthBar.setPosition(65,10)
+playerHealthBar.setBarSize(50,3)
+enemyHealthBar.setLabel("HP", 1000)
+playerHealthBar.setLabel("HP", 1000)
+//Render.toggleViewMode()
+
+//enemyHealthBar.max = 500
+playerHealthBar.max = 100
+
+//if (statusbar.value <= 0) {
+   // function (projectile, enemy) {
+     //   enemy.destroy()
+//}}
+
+
+
+statusbars.onZero(StatusBarKind.EnemyHealth, function (status) {
+    game.gameOver(true)
+})
+
+statusbars.onZero(StatusBarKind.Health, function (status) {
+    game.gameOver(false)
 })
