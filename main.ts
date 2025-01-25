@@ -1,8 +1,14 @@
 //function Follow() {
 //    enemySprite.follow(mySprite, 10)
 //}
+
+
+let coordinates = statusbars.create(30, 3, StatusBarKind.EnemyHealth)
+coordinates.setPosition(1000, 1000)
+
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
-    Render.jumpWithHeightAndDuration(mySprite, 16, 500)
+    //Render.jumpWithHeightAndDuration(mySprite, 16, 500)
+    coordinates.setLabel("Y: " + mySprite.y + " X: " + mySprite.x, 1)
 })
 
 // Shoot a fireball in the direction the player is facing
@@ -20,7 +26,7 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
 
 
     // Define the speed of the projectile
-    let speed = 50
+    let speed = 75
 
 
     // Calculate velocity components using the angle
@@ -56,7 +62,22 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherS
 let enemySprite: Sprite = null
 let mySprite: Sprite = null
 mySprite = Render.getRenderSpriteVariable()
-tiles.setCurrentTilemap(tilemap`level`)
+
+//Debug mode
+
+let enterDebugMode = false
+if (game.askForNumber("Enter Debug mode? 1=yes,no=any num", 1) == 1) {
+    tiles.setCurrentTilemap(tilemap`level6`)
+    //let coordinates = statusbars.create(30, 3, StatusBarKind.EnemyHealth)
+    coordinates.setLabel("Y: " + mySprite.y + " X: " + mySprite.x, 1)
+    coordinates.setPosition(65, 100)
+    coordinates.setBarSize(3, 3)
+}
+else {
+    tiles.setCurrentTilemap(tilemap`level`)
+}
+
+
 tiles.placeOnTile(mySprite, tiles.getTileLocation(31, 62))
 enemySprite = sprites.create(img`
     ..............fff...............
@@ -305,7 +326,12 @@ playerHealthBar.max = 100
      //   enemy.destroy()
 //}}
 
+timer.debounce("action", 1, function() {
+    playerHealth += 10
+    playerHealthBar.value += 10
+})
 
+ 
 
 statusbars.onZero(StatusBarKind.EnemyHealth, function (status) {
     game.gameOver(true)
@@ -313,4 +339,26 @@ statusbars.onZero(StatusBarKind.EnemyHealth, function (status) {
 
 statusbars.onZero(StatusBarKind.Health, function (status) {
     game.gameOver(false)
+})
+
+
+
+spawnHealthPotion(100)
+
+function spawnHealthPotion(amount: number) {
+    for (let i = 0; i < amount; i++) {
+        let heartPotion = sprites.create(assets.image`heart`, SpriteKind.Food)
+        heartPotion.setPosition(randint(0, 1000), randint(1, 1000))
+    } 
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (player, food) {
+    food.destroy()
+    playerHealth += 10
+    playerHealthBar.value += 10
+})
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Food, function (projectile, food) {
+    food.destroy()
+    projectile.destroy()
+    playerHealth += 10
+    playerHealthBar.value += 10
 })

@@ -4,6 +4,11 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "fireball"
     },
+    "image2": {
+        "data": "hwQJAAgAAAAAIgAAICICACIiIgAiIiICICIiIiISIgIiISIAICICAAAiAAA=",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "heart"
+    },
     "*": {
         "mimeType": "image/x-mkcd-f4",
         "dataEncoding": "base64",

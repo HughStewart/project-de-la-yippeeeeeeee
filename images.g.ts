@@ -10,6 +10,17 @@ namespace myImages {
 4 5 2 5 
 2 5 4 2 
 `;
+            case "image2":
+            case "heart":return img`
+. . 2 2 . 2 2 . . 
+. 2 2 2 2 2 2 2 . 
+2 2 2 2 2 2 1 2 2 
+2 2 2 2 2 1 2 2 2 
+. 2 2 2 2 2 2 2 . 
+. . 2 2 2 2 2 . . 
+. . . 2 2 2 . . . 
+. . . . 2 . . . . 
+`;
         }
         return null;
     })
