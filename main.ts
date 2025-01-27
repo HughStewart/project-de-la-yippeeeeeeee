@@ -53,9 +53,9 @@ if (scene.onHitWall(SpriteKind.Projectile, function (sprite: Sprite, location: t
 
 
 
-function MakeEnemy () {
-    tiles.placeOnTile(enemySprite, tiles.getTileLocation(32, 58))
-}
+    function MakeEnemy() {
+        tiles.placeOnTile(enemySprite, tiles.getTileLocation(32, 58))
+    }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
     enemySprite.x += 1
 })
@@ -236,8 +236,8 @@ scene.setBackgroundImage(img`
     bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
     `)
 animation.runImageAnimation(
-enemySprite,
-[img`
+    enemySprite,
+    [img`
     . . . . . . f f b f f . . . . . 
     . . . . . . f b 1 1 f f . . . . 
     . . . . . . f b 1 1 1 f . . . . 
@@ -254,7 +254,7 @@ enemySprite,
     . f 2 1 f b 1 f f f f b 1 2 f . 
     f f 2 2 f b 1 f . . f 2 2 2 f . 
     f 2 2 2 f b 1 f . . f 2 2 2 f f 
-    `,img`
+    `, img`
     . . . . . . f f b f f . . . . . 
     . . . . . . f b 1 1 f f . . . . 
     . . . . . . f b 1 1 1 f . . . . 
@@ -272,8 +272,8 @@ enemySprite,
     f f 2 2 f . . f b 1 f 2 2 2 f . 
     f 2 2 2 f . . f b 1 f 2 2 2 f f 
     `],
-500,
-true
+    500,
+    true
 )
 MakeEnemy()
 //Follow()
@@ -298,7 +298,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (projectile, ene
     playerHealthBar.value += -1
     //game.over(false) // End the game with a win
 })
-game.onUpdateInterval(500, function() {
+game.onUpdateInterval(500, function () {
     scene.followPath(enemySprite, scene.aStar(tiles.locationOfSprite(enemySprite), tiles.locationOfSprite(mySprite)), 33)
 })
 
@@ -312,9 +312,9 @@ enemyHealthBar.attachToSprite(enemySprite)
 //playerHealthBar.attachToSprite(enemySprite)
 playerHealthBar.setOffsetPadding(-5, -4)
 Render.setSpriteAttribute(enemyHealthBar, RCSpriteAttribute.ZOffset, 20)
-playerHealthBar.setPosition(65,10)
-playerHealthBar.setBarSize(50,3)
-enemyHealthBar.setLabel("HP", 1000)
+playerHealthBar.setPosition(65, 10)
+playerHealthBar.setBarSize(50, 3)
+//enemyHealthBar.setLabel("HP", 1000)
 playerHealthBar.setLabel("HP", 1000)
 //Render.toggleViewMode()
 
@@ -322,16 +322,16 @@ playerHealthBar.setLabel("HP", 1000)
 playerHealthBar.max = 100
 
 //if (statusbar.value <= 0) {
-   // function (projectile, enemy) {
-     //   enemy.destroy()
+// function (projectile, enemy) {
+//   enemy.destroy()
 //}}
 
-timer.debounce("action", 1, function() {
+timer.debounce("action", 1, function () {
     playerHealth += 10
     playerHealthBar.value += 10
 })
 
- 
+
 
 statusbars.onZero(StatusBarKind.EnemyHealth, function (status) {
     game.gameOver(true)
@@ -341,15 +341,31 @@ statusbars.onZero(StatusBarKind.Health, function (status) {
     game.gameOver(false)
 })
 
-
-
 spawnHealthPotion(100)
+
+let healthWallCollision = true
+
+//let heartPotion = sprites.create(assets.image`heart`, SpriteKind.Food)
+//heartPotion.setPosition(randint(0, 1000), randint(1, 1000))
 
 function spawnHealthPotion(amount: number) {
     for (let i = 0; i < amount; i++) {
+        healthWallCollision = true
         let heartPotion = sprites.create(assets.image`heart`, SpriteKind.Food)
         heartPotion.setPosition(randint(0, 1000), randint(1, 1000))
-    } 
+        while (healthWallCollision == true) {
+            if (heartPotion.isHittingTile(CollisionDirection.Left) ||
+                heartPotion.isHittingTile(CollisionDirection.Right) ||
+                heartPotion.isHittingTile(CollisionDirection.Top) ||
+                heartPotion.isHittingTile(CollisionDirection.Bottom)) {
+                heartPotion.setPosition(randint(0, 1000), randint(1, 1000))
+            }
+            else {
+                healthWallCollision = false
+            }
+
+        }
+    }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (player, food) {
     food.destroy()
