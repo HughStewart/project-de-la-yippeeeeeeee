@@ -2,19 +2,18 @@
 //    enemySprite.follow(mySprite, 10)
 //}
 
-
+//For debug mode, coordinates for knowing where to spawn certain things.
 let coordinates = statusbars.create(30, 3, StatusBarKind.EnemyHealth)
 coordinates.setPosition(1000, 1000)
 
+//Update the coordinates when the b button is pressed
 controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
     //Render.jumpWithHeightAndDuration(mySprite, 16, 500)
     coordinates.setLabel("Y: " + mySprite.y + " X: " + mySprite.x, 1)
 })
 
 // Shoot a fireball in the direction the player is facing
-
 //let fireball_player = sprites.create(assets.image`fireball`, SpriteKind.Projectile)
-
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     // Get the player's facing direction
     let dirX = Render.getAttribute(Render.attribute.dirX)
@@ -47,25 +46,24 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     fireball_player.setVelocity(vx, vy)
 })
 
+//Delete the sprite on a collision with the wall
 if (scene.onHitWall(SpriteKind.Projectile, function (sprite: Sprite, location: tiles.Location) {
     sprite.destroy()
 }))
 
 
+//Function that creates the enemy to chase the player
+function MakeEnemy() {
+    tiles.placeOnTile(enemySprite, tiles.getTileLocation(32, 58))
+}
 
-    function MakeEnemy() {
-        tiles.placeOnTile(enemySprite, tiles.getTileLocation(32, 58))
-    }
-sprites.onOverlap(SpriteKind.Player, SpriteKind.Player, function (sprite, otherSprite) {
-    enemySprite.x += 1
-})
 let enemySprite: Sprite = null
 let mySprite: Sprite = null
 mySprite = Render.getRenderSpriteVariable()
 
-//Debug mode
-
+//Debug mode & entering debug mode
 let enterDebugMode = false
+//User input:
 if (game.askForNumber("Enter Debug mode? 1=yes,no=any num", 1) == 1) {
     tiles.setCurrentTilemap(tilemap`level6`)
     //let coordinates = statusbars.create(30, 3, StatusBarKind.EnemyHealth)
@@ -275,8 +273,9 @@ animation.runImageAnimation(
     500,
     true
 )
+//Calls the enemy function created earlier to spawn the enemy at the correct coordinates
 MakeEnemy()
-//Follow()
+
 /*
 let enemyHealthBar = statusbars.create(20, 4, StatusBarKind.Health);
 enemyHealthBar.attachToSprite(enemySprite);
@@ -285,25 +284,27 @@ let enemyHealth = 500
 let playerHealth = 100
 
 
-
+//Checks if the enemy has come in contact with a projectile from the player and makes the enemy take damage
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (projectile, enemy) {
     projectile.destroy() // Destroy the fireball
-    enemyHealth -= 1.5 // Destroy the enemy sprite
-    enemyHealthBar.value -= 1.5
+    enemyHealth -= 1.25 // Destroy the enemy sprite
+    enemyHealthBar.value -= 1.25
     //game.over(true) // End the game with a win
 })
+//Checks if the Player has come in contact with the Enemy and makes the player take damage
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (projectile, enemy) {
     //enemy.destroy() // Destroy the enemy sprite
     playerHealth += -1
     playerHealthBar.value += -1
     //game.over(false) // End the game with a win
 })
+//Makes the enemy pathfind to the player at a certain speed (The faster, the more accurate)
 game.onUpdateInterval(500, function () {
-    scene.followPath(enemySprite, scene.aStar(tiles.locationOfSprite(enemySprite), tiles.locationOfSprite(mySprite)), 33)
+    scene.followPath(enemySprite, scene.aStar(tiles.locationOfSprite(enemySprite), tiles.locationOfSprite(mySprite)), 35)
 })
 
 
-
+//Health Bar creation settings
 // Enemy Health Bar:
 let enemyHealthBar = statusbars.create(30, 3, StatusBarKind.EnemyHealth)
 //Player Health Bar:
@@ -316,7 +317,6 @@ playerHealthBar.setPosition(65, 10)
 playerHealthBar.setBarSize(50, 3)
 //enemyHealthBar.setLabel("HP", 1000)
 playerHealthBar.setLabel("HP", 1000)
-//Render.toggleViewMode()
 
 //enemyHealthBar.max = 500
 playerHealthBar.max = 100
@@ -326,47 +326,55 @@ playerHealthBar.max = 100
 //   enemy.destroy()
 //}}
 
+//Useless code
+//--------------
 timer.debounce("action", 1, function () {
     playerHealth += 10
     playerHealthBar.value += 10
 })
+//--------------
 
+Render.moveWithController(2.5)
+//Render.toggleViewMode()
 
-
+//Checks if the health bar of the enemy has hit 0 and then ends the game to say that the player has won
 statusbars.onZero(StatusBarKind.EnemyHealth, function (status) {
     game.gameOver(true)
 })
-
+//Checks if the health bar of the player has hit 0 and then ends the game to say that the player has lost
 statusbars.onZero(StatusBarKind.Health, function (status) {
     game.gameOver(false)
 })
 
-spawnHealthPotion(100)
+//Spawns the hearts on the map with the specified amount
+spawnHealthPotion(40)
 
 let healthWallCollision = true
 
 //let heartPotion = sprites.create(assets.image`heart`, SpriteKind.Food)
 //heartPotion.setPosition(randint(0, 1000), randint(1, 1000))
 
+//This is a function to spawn the health potions
 function spawnHealthPotion(amount: number) {
     for (let i = 0; i < amount; i++) {
-        healthWallCollision = true
-        let heartPotion = sprites.create(assets.image`heart`, SpriteKind.Food)
-        heartPotion.setPosition(randint(0, 1000), randint(1, 1000))
-        while (healthWallCollision == true) {
-            if (heartPotion.isHittingTile(CollisionDirection.Left) ||
-                heartPotion.isHittingTile(CollisionDirection.Right) ||
-                heartPotion.isHittingTile(CollisionDirection.Top) ||
-                heartPotion.isHittingTile(CollisionDirection.Bottom)) {
-                heartPotion.setPosition(randint(0, 1000), randint(1, 1000))
-            }
-            else {
-                healthWallCollision = false
-            }
+        let validPosition = false;
+        let heartPotion: Sprite;
 
+        while (!validPosition) {
+            heartPotion = sprites.create(assets.image`heart`, SpriteKind.Food);
+            heartPotion.setPosition(randint(0, 1000), randint(1, 1000));
+
+            // Check if the heartPotion overlaps with a wall
+            if (!tiles.tileAtLocationIsWall(tiles.locationOfSprite(heartPotion))) {
+                validPosition = true; // Break the loop if the position is valid
+            } else {
+                heartPotion.destroy(); // Destroy the potion if it spawned in a wall
+            }
         }
     }
 }
+
+
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Food, function (player, food) {
     food.destroy()
     playerHealth += 10
